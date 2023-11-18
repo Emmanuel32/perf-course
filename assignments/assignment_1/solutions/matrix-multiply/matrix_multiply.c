@@ -90,23 +90,37 @@ int matrix_multiply_run(const matrix *A, const matrix *B, matrix *C)
            "B->cols = %d, C->cols = %d\n", B->cols, C->cols);
 
   int block_size = 64;
+  int bi;
+  int bk;
+  int bj;
 
-  for (int bi = 0; bi < A->rows; bi += block_size)
+  for (bi = block_size; bi < A->rows; bi += block_size)
   {
-    for (int bk = 0; bk < A->cols; bk += block_size)
+    for (bk = block_size; bk < A->cols; bk += block_size)
     {
-      for (int bj = 0; bj < B->cols; bj += block_size)
+      for (bj = block_size; bj < B->cols; bj += block_size)
       {
-        for (int i = bi; i < bi + block_size; i++)
+        for (int i = bi - block_size; i < bi; i++)
         {
-          for (int k = bk; k < bk + block_size; k++)
+          for (int k = bk - block_size; k < bk; k++)
           {
-            for (int j = bj; j < bj + block_size; j++)
+            for (int j = bj - block_size; j < bj; j++)
             {
               C->values[i][j] += A->values[i][k] * B->values[k][j];
             }
           }
         }
+      }
+    }
+  }
+
+  for (int i = bi - block_size; i < A->rows; i++)
+  {
+    for (int k = bk - block_size; k < A->cols; k++)
+    {
+      for (int j = bj - block_size; j < B->cols; j++)
+      {
+        C->values[i][j] += A->values[i][k] * B->values[k][j];
       }
     }
   }
