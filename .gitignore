@@ -4,3 +4,6 @@
 !**/Makefile
 **/*.o
 **/.buildmode
+**/perf.data
+**/perf.data.old
+**/cachegrind.out.*
